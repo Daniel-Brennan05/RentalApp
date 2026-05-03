@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RentalApp.ViewModels"
+             x:Class="RentalApp.Views.ReviewsPage"
+             x:DataType="vm:ReviewsViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="12" Padding="16">
+
+            <!-- Error banner -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="White"
+                   BackgroundColor="{StaticResource Danger}"
+                   Padding="12,8"
+                   IsVisible="{Binding HasError}" />
+
+            <!-- Submit review section (only if user can review) -->
+            <Frame Padding="16" CornerRadius="8" IsVisible="{Binding CanSubmitReview}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Leave a Review" FontSize="16" FontAttributes="Bold" />
+
+                    <Label Text="Rating (1–5)" />
+                    <Stepper Minimum="1" Maximum="5" Increment="1"
+                             Value="{Binding NewRating}" />
+                    <Label Text="{Binding NewRating, StringFormat='Selected: {0} star(s)'}"
+                           TextColor="{StaticResource Primary}" />
+
+                    <Label Text="Comment" />
+                    <Editor Placeholder="Share your experience..."
+                            Text="{Binding NewComment}"
+                            MinimumHeightRequest="80"
+                            AutoSize="TextChanges" />
+
+                    <Button Text="Submit Review"
+                            Command="{Binding SubmitReviewCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Reviews list -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                <Label Grid.Column="0" Text="Reviews" FontSize="18" FontAttributes="Bold" />
+                <Label Grid.Column="1"
+                       Text="{Binding AverageRating}"
+                       FontSize="14"
+                       TextColor="{StaticResource Primary}"
+                       VerticalOptions="Center" />
+            </Grid>
+
+            <CollectionView ItemsSource="{Binding Reviews}" SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <Label Text="No reviews yet." TextColor="{StaticResource Gray600}"
+                           HorizontalTextAlignment="Center" Margin="0,16" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:Object">
+                        <Frame Margin="0,4" Padding="12" CornerRadius="8">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Reviewer.FullName}"
+                                       FontAttributes="Bold" />
+                                <Label Text="{Binding Rating, StringFormat='Rating: {0}/5'}"
+                                       TextColor="{StaticResource Warning}" />
+                                <Label Text="{Binding Comment}"
+                                       TextColor="{StaticResource Gray600}" />
+                                <Label Text="{Binding CreatedAt, StringFormat='{0:d}'}"
+                                       FontSize="11"
+                                       TextColor="{StaticResource Gray300}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

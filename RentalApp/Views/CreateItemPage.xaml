@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="RentalApp.Views.CreateItemPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RentalApp.ViewModels"
+             xmlns:models="clr-namespace:RentalApp.Database.Models;assembly=RentalApp.Database"
+             x:DataType="vm:CreateItemViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <StackLayout Padding="24" Spacing="16">
+
+            <!-- Error -->
+            <Border BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#1B0000}"
+                    Stroke="{AppThemeBinding Light=#F44336, Dark=#EF5350}"
+                    StrokeThickness="1" Padding="15"
+                    IsVisible="{Binding HasError}">
+                <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}" FontSize="14" />
+            </Border>
+
+            <!-- Title -->
+            <Label Text="Item Title" FontSize="14" FontAttributes="Bold" />
+            <Border Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                    StrokeThickness="1"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                <Entry Text="{Binding ItemTitle}"
+                       Placeholder="e.g. Bosch Cordless Drill"
+                       FontSize="16" Margin="15,10" />
+            </Border>
+
+            <!-- Description -->
+            <Label Text="Description" FontSize="14" FontAttributes="Bold" />
+            <Border Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                    StrokeThickness="1"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                <Editor Text="{Binding Description}"
+                        Placeholder="Describe your item, condition, and any rules..."
+                        FontSize="15"
+                        HeightRequest="100"
+                        Margin="12,8" />
+            </Border>
+
+            <!-- Daily Rate -->
+            <Label Text="Daily Rate (£)" FontSize="14" FontAttributes="Bold" />
+            <Border Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                    StrokeThickness="1"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                <Entry Text="{Binding DailyRateText}"
+                       Placeholder="e.g. 12.50"
+                       Keyboard="Numeric"
+                       FontSize="16" Margin="15,10" />
+            </Border>
+
+            <!-- Category -->
+            <Label Text="Category" FontSize="14" FontAttributes="Bold" />
+            <Border Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                    StrokeThickness="1"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                <Picker ItemsSource="{Binding Categories}"
+                        SelectedItem="{Binding SelectedCategory}"
+                        ItemDisplayBinding="{Binding Name}"
+                        FontSize="15"
+                        Margin="10,5" />
+            </Border>
+
+            <!-- Location -->
+            <Label Text="Location (optional)" FontSize="14" FontAttributes="Bold" />
+            <Button Text="Use My Location"
+                    Command="{Binding UseCurrentLocationCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"
+                    CornerRadius="8" HeightRequest="44" />
+            <Label Text="{Binding LocationStatus}"
+                   FontSize="13"
+                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                   IsVisible="{Binding LocationStatus, Converter={StaticResource StringToBoolConverter}}" />
+
+            <!-- Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
+                <Button Grid.Column="0"
+                        Text="Cancel"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
+                        TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"
+                        CornerRadius="8" HeightRequest="50" />
+                <Button Grid.Column="1"
+                        Text="List Item"
+                        Command="{Binding SaveItemCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="8" HeightRequest="50" />
+            </Grid>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                               HorizontalOptions="Center" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

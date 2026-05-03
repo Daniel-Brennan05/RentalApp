@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="RentalApp.Views.RentalsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RentalApp.ViewModels"
+             xmlns:models="clr-namespace:RentalApp.Database.Models;assembly=RentalApp.Database"
+             x:DataType="vm:RentalsViewModel"
+             Title="{Binding Title}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Home" Command="{Binding NavigateToDashboardCommand}" IconImageSource="home.png" />
+        <ToolbarItem Text="Browse" Command="{Binding NavigateToBrowseCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+        <ScrollView>
+            <StackLayout Padding="16" Spacing="20">
+
+                <!-- Error -->
+                <Border BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#1B0000}"
+                        Stroke="{AppThemeBinding Light=#F44336, Dark=#EF5350}"
+                        StrokeThickness="1" Padding="15"
+                        IsVisible="{Binding HasError}">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}" FontSize="14" />
+                </Border>
+
+                <!-- My Requests (outgoing) -->
+                <Label Text="My Rental Requests" FontSize="20" FontAttributes="Bold" />
+
+                <CollectionView ItemsSource="{Binding MyRequests}" SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <Label Text="No rental requests yet." TextColor="Gray"
+                               HorizontalOptions="Center" Margin="0,10" />
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Rental">
+                            <Frame Margin="0,4" Padding="16" CornerRadius="10" HasShadow="False"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding Item.Title}"
+                                           FontSize="16" FontAttributes="Bold" />
+                                    <Border Grid.Row="0" Grid.Column="1"
+                                            Padding="8,4"
+                                            BackgroundColor="{Binding Status, Converter={StaticResource StatusColorConverter}}">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
+                                        <Label Text="{Binding Status}" TextColor="White" FontSize="11" />
+                                    </Border>
+                                    <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                           Text="{Binding Item.Owner.FullName, StringFormat='Owner: {0}'}"
+                                           FontSize="13" TextColor="Gray" Margin="0,2,0,0" />
+                                    <Label Grid.Row="2" Grid.ColumnSpan="2"
+                                           Text="{Binding StartDate, StringFormat='{0:dd MMM yyyy}'}"
+                                           FontSize="13" TextColor="Gray" />
+                                    <Label Grid.Row="3" Grid.Column="0"
+                                           Text="{Binding TotalPrice, StringFormat='Total: £{0:F2}'}"
+                                           FontSize="14" FontAttributes="Bold" Margin="0,4,0,0"
+                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Incoming Requests (as owner) -->
+                <Label Text="Incoming Requests (My Items)"
+                       FontSize="20" FontAttributes="Bold" Margin="0,10,0,0" />
+
+                <CollectionView ItemsSource="{Binding IncomingRequests}" SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <Label Text="No incoming requests." TextColor="Gray"
+                               HorizontalOptions="Center" Margin="0,10" />
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Rental">
+                            <Frame Margin="0,4" Padding="16" CornerRadius="10" HasShadow="False"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                                <StackLayout Spacing="6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding Item.Title}"
+                                               FontSize="16" FontAttributes="Bold" />
+                                        <Border Grid.Column="1"
+                                                Padding="8,4"
+                                                BackgroundColor="{Binding Status, Converter={StaticResource StatusColorConverter}}">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="6" /></Border.StrokeShape>
+                                            <Label Text="{Binding Status}" TextColor="White" FontSize="11" />
+                                        </Border>
+                                    </Grid>
+                                    <Label Text="{Binding Borrower.FullName, StringFormat='Requested by: {0}'}"
+                                           FontSize="13" TextColor="Gray" />
+                                    <Label Text="{Binding StartDate, StringFormat='{0:dd MMM yyyy}'}"
+                                           FontSize="13" TextColor="Gray" />
+                                    <Label Text="{Binding TotalPrice, StringFormat='Total: £{0:F2}'}"
+                                           FontSize="14" FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+
+                                    <!-- Action buttons shown only for Requested status -->
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10"
+                                          IsVisible="{Binding Status, Converter={StaticResource StatusIsRequestedConverter}}">
+                                        <Button Grid.Column="0"
+                                                Text="Approve"
+                                                BackgroundColor="#28a745"
+                                                TextColor="White"
+                                                CornerRadius="6"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RentalsViewModel}}, Path=ApproveRentalCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Grid.Column="1"
+                                                Text="Reject"
+                                                BackgroundColor="#dc3545"
+                                                TextColor="White"
+                                                CornerRadius="6"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RentalsViewModel}}, Path=RejectRentalCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </Grid>
+
+                                    <!-- Mark out for rent (for Approved) -->
+                                    <Button Text="Mark as Out for Rent"
+                                            BackgroundColor="#007bff"
+                                            TextColor="White"
+                                            CornerRadius="6"
+                                            IsVisible="{Binding Status, Converter={StaticResource StatusIsApprovedConverter}}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RentalsViewModel}}, Path=MarkOutForRentCommand}"
+                                            CommandParameter="{Binding .}" />
+
+                                    <!-- Mark returned (for Approved/OutForRent) -->
+                                    <Button Text="Mark as Returned"
+                                            BackgroundColor="#6c757d"
+                                            TextColor="White"
+                                            CornerRadius="6"
+                                            IsVisible="{Binding Status, Converter={StaticResource StatusIsActiveConverter}}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RentalsViewModel}}, Path=MarkReturnedCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </StackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </StackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

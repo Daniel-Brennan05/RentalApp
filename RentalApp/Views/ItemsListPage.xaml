@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="RentalApp.Views.ItemsListPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RentalApp.ViewModels"
+             xmlns:models="clr-namespace:RentalApp.Database.Models;assembly=RentalApp.Database"
+             x:DataType="vm:ItemsListViewModel"
+             Title="{Binding Title}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Home"
+                     Command="{Binding NavigateToDashboardCommand}"
+                     IconImageSource="home.png" />
+        <ToolbarItem Text="My Rentals"
+                     Command="{Binding NavigateToRentalsCommand}" />
+        <ToolbarItem Text="List Item"
+                     Command="{Binding NavigateToCreateItemCommand}"
+                     IconImageSource="add_user.png" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Error banner -->
+        <Border Grid.Row="0"
+                BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#1B0000}"
+                Stroke="{AppThemeBinding Light=#F44336, Dark=#EF5350}"
+                StrokeThickness="1"
+                Padding="15"
+                IsVisible="{Binding HasError}">
+            <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{AppThemeBinding Light=#D32F2F, Dark=#EF5350}"
+                   FontSize="14" />
+        </Border>
+
+        <!-- Items list -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefreshCommand}">
+            <CollectionView ItemsSource="{Binding Items}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedItem}">
+
+                <CollectionView.EmptyView>
+                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
+                        <Label Text="No items available"
+                               FontSize="18" TextColor="Gray"
+                               HorizontalOptions="Center" />
+                        <Button Text="Be the first to list one!"
+                                Command="{Binding NavigateToCreateItemCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Item">
+                        <Border Margin="12,6"
+                                Padding="16"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                                StrokeThickness="1">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                                <Label Grid.Row="0" Grid.Column="0"
+                                       Text="{Binding Title}"
+                                       FontSize="16" FontAttributes="Bold" />
+                                <Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding DailyRate, StringFormat='£{0:F2}/day'}"
+                                       FontSize="16" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                       Text="{Binding Description}"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                       MaxLines="2"
+                                       LineBreakMode="TailTruncation"
+                                       Margin="0,4,0,0" />
+                                <Label Grid.Row="2" Grid.Column="0"
+                                       Text="{Binding Category.Name}"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                       Margin="0,6,0,0" />
+                                <Label Grid.Row="2" Grid.Column="1"
+                                       Text="{Binding Owner.FullName}"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"
+                                       Margin="0,6,0,0" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Loading overlay -->
+        <ActivityIndicator Grid.Row="1"
+                           IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                           VerticalOptions="Center" HorizontalOptions="Center" />
+    </Grid>
+</ContentPage>

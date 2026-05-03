@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RentalApp.ViewModels"
+             xmlns:models="clr-namespace:RentalApp.Database.Models;assembly=RentalApp.Database"
+             x:Class="RentalApp.Views.NearbyItemsPage"
+             x:DataType="vm:NearbyItemsViewModel"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Location status bar -->
+        <Label Grid.Row="0"
+               Text="{Binding LocationStatus}"
+               FontSize="12"
+               TextColor="{StaticResource Gray600}"
+               Margin="16,8"
+               IsVisible="{Binding LocationStatus, Converter={StaticResource StringToBoolConverter}}" />
+
+        <!-- Error banner -->
+        <Label Grid.Row="1"
+               Text="{Binding ErrorMessage}"
+               TextColor="White"
+               BackgroundColor="{StaticResource Danger}"
+               Padding="12,8"
+               IsVisible="{Binding HasError}" />
+
+        <!-- Items list -->
+        <RefreshView Grid.Row="2"
+                     Command="{Binding RefreshCommand}"
+                     IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView ItemsSource="{Binding NearbyItems}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedItem}">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12" Margin="32">
+                        <Label Text="No nearby items found" FontSize="16" HorizontalTextAlignment="Center" TextColor="{StaticResource Gray600}" />
+                        <Button Text="Refresh" Command="{Binding LoadNearbyItemsCommand}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Item">
+                        <Grid Padding="16,8">
+                            <Frame Padding="12" CornerRadius="8">
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding Title}"
+                                           FontSize="16" FontAttributes="Bold" />
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding DailyRate, StringFormat='£{0:F2}/day'}"
+                                           FontSize="14" FontAttributes="Bold"
+                                           TextColor="{StaticResource Primary}" />
+                                    <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                           Text="{Binding Category.Name}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource Gray600}" />
+                                    <Label Grid.Row="2" Grid.ColumnSpan="2"
+                                           Text="{Binding Description}"
+                                           FontSize="13"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="2" />
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

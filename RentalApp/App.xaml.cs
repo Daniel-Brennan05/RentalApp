@@ -1,0 +1,45 @@
+using RentalApp.ViewModels;
+
+namespace RentalApp;
+
+public partial class App : Application
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public App(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+        InitializeComponent();
+
+        // Auth
+        Routing.RegisterRoute(nameof(Views.LoginPage), typeof(Views.LoginPage));
+        Routing.RegisterRoute(nameof(Views.RegisterPage), typeof(Views.RegisterPage));
+
+        // Dashboard
+        Routing.RegisterRoute(nameof(Views.MainPage), typeof(Views.MainPage));
+
+        // Marketplace
+        Routing.RegisterRoute(nameof(Views.ItemsListPage), typeof(Views.ItemsListPage));
+        Routing.RegisterRoute(nameof(Views.ItemDetailPage), typeof(Views.ItemDetailPage));
+        Routing.RegisterRoute(nameof(Views.CreateItemPage), typeof(Views.CreateItemPage));
+        Routing.RegisterRoute(nameof(Views.NearbyItemsPage), typeof(Views.NearbyItemsPage));
+        Routing.RegisterRoute(nameof(Views.RentalsPage), typeof(Views.RentalsPage));
+        Routing.RegisterRoute(nameof(Views.ReviewsPage), typeof(Views.ReviewsPage));
+
+        // Admin
+        Routing.RegisterRoute(nameof(Views.UserListPage), typeof(Views.UserListPage));
+        Routing.RegisterRoute(nameof(Views.UserDetailPage), typeof(Views.UserDetailPage));
+
+        // Placeholder
+        Routing.RegisterRoute(nameof(Views.TempPage), typeof(Views.TempPage));
+    }
+
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var shell = _serviceProvider.GetService<AppShell>();
+        if (shell == null)
+            throw new InvalidOperationException("AppShell could not be resolved from the service provider.");
+
+        return new Window(shell);
+    }
+}
