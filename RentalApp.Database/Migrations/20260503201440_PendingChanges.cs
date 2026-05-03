@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -14,14 +13,8 @@ namespace RentalApp.Database.Migrations
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,");
 
-            migrationBuilder.AlterColumn<Point>(
-                name: "Location",
-                table: "items",
-                type: "geometry",
-                nullable: true,
-                oldClrType: typeof(Point),
-                oldType: "geography (point)",
-                oldNullable: true);
+            migrationBuilder.Sql(
+                @"ALTER TABLE items ALTER COLUMN ""Location"" TYPE geometry USING ""Location""::geometry;");
         }
 
         /// <inheritdoc />
@@ -30,14 +23,8 @@ namespace RentalApp.Database.Migrations
             migrationBuilder.AlterDatabase()
                 .OldAnnotation("Npgsql:PostgresExtension:postgis", ",,");
 
-            migrationBuilder.AlterColumn<Point>(
-                name: "Location",
-                table: "items",
-                type: "geography (point)",
-                nullable: true,
-                oldClrType: typeof(Point),
-                oldType: "geometry",
-                oldNullable: true);
+            migrationBuilder.Sql(
+                @"ALTER TABLE items ALTER COLUMN ""Location"" TYPE geography(Point,4326) USING ""Location""::geography;");
         }
     }
 }
