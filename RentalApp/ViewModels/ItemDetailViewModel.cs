@@ -128,7 +128,7 @@ public partial class ItemDetailViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            SetError(ex.Message);
+            SetError(ex.InnerException?.Message ?? ex.Message);
         }
         finally
         {

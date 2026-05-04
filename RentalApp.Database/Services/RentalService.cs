@@ -16,6 +16,9 @@ public class RentalService : IRentalService
 
     public async Task<bool> CanRentItemAsync(int itemId, DateTime startDate, DateTime endDate)
     {
+        startDate = DateTime.SpecifyKind(startDate.Date, DateTimeKind.Utc);
+        endDate   = DateTime.SpecifyKind(endDate.Date,   DateTimeKind.Utc);
+
         if (startDate >= endDate)
             return false;
 
@@ -31,6 +34,10 @@ public class RentalService : IRentalService
 
     public async Task<Rental> RequestRentalAsync(int itemId, int borrowerId, DateTime startDate, DateTime endDate)
     {
+        // Postgres timestamp with time zone requires UTC; DatePicker returns Local kind
+        startDate = DateTime.SpecifyKind(startDate.Date, DateTimeKind.Utc);
+        endDate   = DateTime.SpecifyKind(endDate.Date,   DateTimeKind.Utc);
+
         var item = await _itemRepository.GetByIdAsync(itemId)
             ?? throw new InvalidOperationException("Item not found.");
 

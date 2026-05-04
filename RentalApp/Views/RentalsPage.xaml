@@ -10,6 +10,7 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Home" Command="{Binding NavigateToDashboardCommand}" IconImageSource="home.png" />
         <ToolbarItem Text="Browse" Command="{Binding NavigateToBrowseCommand}" />
+        <ToolbarItem Text="List Item" Command="{Binding NavigateToCreateItemCommand}" />
     </ContentPage.ToolbarItems>
 
     <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">

@@ -147,4 +147,8 @@ public partial class RentalsViewModel : BaseViewModel
     [RelayCommand]
     private async Task NavigateToBrowseAsync() =>
         await _navigationService.NavigateToAsync("ItemsListPage");
+
+    [RelayCommand]
+    private async Task NavigateToCreateItemAsync() =>
+        await _navigationService.NavigateToAsync("CreateItemPage");
 }
